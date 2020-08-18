@@ -8,8 +8,7 @@ export const initialState = {
     nameError: "",
     ingredientsError: "",
     categoriesError: "",
-    savingClicked: false,
-    recipeModel: {}
+    savingClicked: false
 }
 
 export function reducer(state, action){
@@ -22,12 +21,6 @@ export function reducer(state, action){
             }else{
                 return {...state, ingredients: [action.payload, ...state.ingredients]}
             }
-        case "addIngredientId":
-            copyIngred = [...state.recipeModel.ingredients]
-            copyIngred[action.payload.i] = {id: action.payload.id, name: action.payload.name}
-
-            return {...state, recipeModel:{...state.recipeModel, ingredients: copyIngred}}
-
         case "removeIngredient":
             const ingredients = state.ingredients.filter(el => el!==action.payload)
             return {...state, ingredients}
@@ -38,12 +31,6 @@ export function reducer(state, action){
             }else{
                 return {...state, categories: [action.payload, ...state.categories]}
             }
-        
-        case "addCategoryId":
-            copyCats = [...state.recipeModel.categories]
-            copyCats[action.payload.j] = {id: action.payload.id, name: action.payload.name}
-
-            return {...state, recipeModel: {...state.recipeModel, categories: copyCats}}
         
         case "removeCategory":
             const categories = state.categories.filter(el => el!==action.payload)
@@ -60,6 +47,10 @@ export function reducer(state, action){
 
         case "changeSavingClicked":
             return {...state, savingClicked: true}
+        
+        case "reset":
+            return initialState
+
         
         case "errorOccurance":
             let copyState = {...state}

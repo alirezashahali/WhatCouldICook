@@ -22,10 +22,10 @@ const CatReducer = (state=INITIAL_STATE, actions) => {
             return {...state, chosenCats}
 
         case categorieTypes.ADD_ALL_CAT:
-            if(state.allCats.findIndex(el => el.name===actions.payload)<= -1){
+            if(!state.allCats.find(el => el.name === actions.payload)){
                 const id = Math.floor(Math.random()*100000)
                 console.log("TYPEOF", typeof actions.payload)
-                return {...state, allCats: [...state.allCats, {...actions.payload, id}]}
+                return {...state, allCats: [...state.allCats, {name: actions.payload, id}]}
             }else{
                 return state
             }

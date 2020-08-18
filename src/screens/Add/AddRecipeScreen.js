@@ -1,4 +1,4 @@
-import React, {useReducer} from 'react'
+import React, {useReducer, useEffect} from 'react'
 import {View, Text, StyleSheet, Platform, Keyboard,
     TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView} from 'react-native'
 import AddRecipeForm from './../../../src/screens/Add/AddRecipeForm'
@@ -22,6 +22,7 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, AddRecipe}) => 
     navigation.setOptions({headerRight:() => (
             <View style={{marginRight: marginLR}}>
                 <Touch onPress={() => {
+                    // inDispatch('reset')
                     inDispatch({type:"changeSavingClicked"})
                     let errors = errorChecker(state)
                     if(Math.max(...errors)>0){
@@ -31,12 +32,11 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, AddRecipe}) => 
                         AddIngredient(state.ingredients[i])
                     }
                     for(j in state.categories){
-                        console.log('CATEGORIES',state.categories[j], "LIST", state.categories)
                         AddAllCats(state.categories[j])
                     }
-                    AddRecipe(state)
-                    navigation.navigate("search")
-                    inDispatch(initialState)
+                    let copyState = {...state}
+                    navigation.navigate("recipeList", {state: copyState})
+                    inDispatch({type: 'reset'})
                 }}>
                     <MaterialCommunityIcons name="file-document-box-check" size={size} color="white" />
                 </Touch>
