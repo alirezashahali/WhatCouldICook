@@ -1,7 +1,8 @@
 import categorieTypes from './categories.types'
+import {initial_categories} from './../../data/dummyRecipe'
 
 INITIAL_STATE = {
-    allCats: [],
+    allCats: initial_categories,
     chosenCats: []
 }
 
@@ -9,7 +10,7 @@ const CatReducer = (state=INITIAL_STATE, actions) => {
     switch(actions.type){
         case categorieTypes.ADD_CAT:
             
-            if(state.chosenCats.findIndex(el => el.name===actions.payload)> -1){
+            if(state.chosenCats.findIndex(el => el.name===actions.payload)<= -1){
                 const id = Math.floor(Math.random()*100000)
                 return {...state, chosenCats: [...state.chosenCats, {...actions.payload, id}]}
             }else{
@@ -21,8 +22,9 @@ const CatReducer = (state=INITIAL_STATE, actions) => {
             return {...state, chosenCats}
 
         case categorieTypes.ADD_ALL_CAT:
-            if(state.allCats.findIndex(el => el.name===actions.payload)> -1){
+            if(state.allCats.findIndex(el => el.name===actions.payload)<= -1){
                 const id = Math.floor(Math.random()*100000)
+                console.log("TYPEOF", typeof actions.payload)
                 return {...state, allCats: [...state.allCats, {...actions.payload, id}]}
             }else{
                 return state

@@ -5,6 +5,6 @@ import categoriesReducer from './categories/categories.reducers'
 
 export default rootReducer = combineReducers({
     ingredients: ingredientsReducer,
-    recipe: recipesReducer,
+    recipes: recipesReducer,
     categories: categoriesReducer
 })

@@ -1,14 +1,14 @@
 import recipeTypes from './recipe.types'
-import dummyRecipe from './../../data/dummyRecipe'
+import {initial_recipes} from './../../data/dummyRecipe'
 
 const INITIAL_STATE = {
-    recipes:dummyRecipe
+    recipes:initial_recipes
 }
 
 const RecipeReducer = (state=INITIAL_STATE, actions) => {
     switch(actions.type){
         case recipeTypes.ADD_RECIPE:
-            if(state.recipes.findIndex(el => el.name===actions.payload.name)>-1){
+            if(state.recipes.findIndex(el => el.name===actions.payload.name)<=-1){
                 const id = Math.floor(Math.random()*100000)
                 return {...state, recipes:[...state.recipes, {...actions.payload, id}]}
             }else{
