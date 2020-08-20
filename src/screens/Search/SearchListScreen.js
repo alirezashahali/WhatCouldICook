@@ -1,21 +1,34 @@
 import React, {useState, useEffect} from 'react'
-import {View, Text, StyleSheet, FlatList, Image, ActivityIndicator} from 'react-native'
+import {View, Text, StyleSheet, FlatList, Image,
+    Alert, ScrollView, TouchableWithoutFeedback, Keyboard} from 'react-native'
 import {addRecipe} from './../../../redux/recipe/recipe.actions'
 import {connect} from 'react-redux'
-import {marginLR} from './../../../constants/miscelaneous'
+import {marginLR, size} from './../../../constants/miscelaneous'
 import {SpacerHalf} from './../../components/Spacer'
-import Center from './../../components/Center'
+import LoadingScreen from './../../components/LoadingScreen'
 import Card from './../../components/Card'
 import Touchanger from './../../../utils/Touchanger'
 import Colors from './../../../constants/colors'
+import { Ionicons } from '@expo/vector-icons';
+import SearchComponent from './../../components/SearchComponent'
 
 const SearchListScreen = ({recipes, allCats, navigation, route, ingredients, AddRecipe}) =>{
     const [adding, setAdding] = useState(false)
+    const [modalVisible, setModalVisible] = useState(false)
+    const [searchName, setSearchName] = useState('')
+
+    const closeVisible = () => {
+        setModalVisible(false)
+    }
+
+    // const changeSearchModal = () => {
+
+    // }
+
     const Touch = Touchanger()
     
     useEffect(() => {
         if(route.params?.state){
-            console.log('ALLCATS',allCats)
             setAdding(true)
             const state = route.params.state
             for(i in state.ingredients){
@@ -33,19 +46,26 @@ const SearchListScreen = ({recipes, allCats, navigation, route, ingredients, Add
         }
     }, [route.params?.state])
 
-    // if(route){
-    //     console.log('REOute', route)
-    //     const state = route.params?.state
-    //     console.log('STATE',state)
-    //     setAdding(true)
-    // }
+    // useEffect(()=>{
+    //     console.log(modalVisible)
+    // },[modalVisible])
+
+    navigation.setOptions({
+        headerRight: () => (
+            <View style={{marginRight: marginLR}}>
+                <Touch onPress={() => {
+                    setModalVisible(!modalVisible)
+                }}>
+                    <Ionicons name="md-search" size={size} color={Colors.headerFont}/>
+                </Touch>
+            </View>
+        )
+    })
+
 
     if(adding){
         return(
-            <Center>
-                <ActivityIndicator style={{
-                }} size="large" color={Colors.header} />
-            </Center>
+            <LoadingScreen/>
         )
     }
     
@@ -81,12 +101,21 @@ const SearchListScreen = ({recipes, allCats, navigation, route, ingredients, Add
     }
 
     return(
-        <View style={styles}>
-            <FlatList
-                data={recipes}
-                renderItem={renderRecipe}
-                keyExtractor={item => String(item.id)}
-            />
+        <View style={styles.container}>
+            <SearchComponent title={searchName} setTitle={setSearchName}
+                visible={modalVisible} close={closeVisible} />
+                <TouchableWithoutFeedback onPress={() => {
+                    setModalVisible(false)
+                    if(Keyboard){
+                        Keyboard.dismiss()
+                    }
+                }} >
+                    <FlatList
+                        data={recipes}
+                        renderItem={renderRecipe}
+                        keyExtractor={item => String(item.id)}
+                    />
+                </TouchableWithoutFeedback>
         </View>
     )
 }
@@ -102,6 +131,9 @@ const MapDispatchToProps = dispatch => ({
 })
 
 const styles = StyleSheet.create({
+    container:{
+        overflow: "hidden"
+    },
     recipeName:{
         textAlign: "center",
         fontSize: 18,

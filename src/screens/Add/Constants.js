@@ -8,7 +8,8 @@ export const initialState = {
     nameError: "",
     ingredientsError: "",
     categoriesError: "",
-    savingClicked: false
+    savingClicked: false,
+    firstVisit: true
 }
 
 export function reducer(state, action){
@@ -51,6 +52,8 @@ export function reducer(state, action){
         case "reset":
             return initialState
 
+        case "moreVisit":
+            return {...state, firstVisit: false}
         
         case "errorOccurance":
             let copyState = {...state}

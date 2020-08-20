@@ -15,9 +15,16 @@ const Input = ({onSubmit}) => {
 
     return(
         <View style={styles.container} >
-            <TextInput style={styles.input} multiline={true} value={name} onChangeText={text => {
+            <TextInput numberOfLines={1} multiline={false} keyboardAppearance="dark"
+                onKeyPress={({nativeEvent:{key}}) => {
+                if( key==='Enter' && name.trim() !== ""){
+                    onSubmit(name.trim())
+                    setName("")
+                }
+            }}
+                style={styles.input} multiline={true} value={name} onChangeText={text => {
                 handleChange(text)
-            }} />
+            }} returnKeyType={"done"} />
             <CustomButton style={{backgroundColor: "blue", paddingHorizontal: 5, paddingVertical: 5,
             width: null}} onPress={() => {
                 if(name.trim() !== ""){

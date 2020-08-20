@@ -3,7 +3,7 @@ import {View, Text, StyleSheet, Platform, Keyboard,
     TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView} from 'react-native'
 import AddRecipeForm from './../../../src/screens/Add/AddRecipeForm'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {SpacerFull, SpacerHalf} from './../../components/Spacer'
+import {SpacerFull} from './../../components/Spacer'
 import {marginLR, size} from './../../../constants/miscelaneous'
 import CustomTextInput from './../../components/TextInput'
 import Touchanger from './../../../utils/Touchanger'
@@ -11,13 +11,16 @@ import ErrorDisplayer from './../../components/ErrorDisplayer'
 import {connect} from 'react-redux'
 import {addAllCats} from './../../../redux/categories/categories.actions'
 import {addIngredient} from './../../../redux/ingredients/ingredients.actions'
-import {addRecipe} from './../../../redux/recipe/recipe.actions'
 import {initialState, reducer, errorChecker} from './Constants'
 
 
-const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, AddRecipe}) => {
+const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
     const [state, inDispatch] = useReducer(reducer, initialState)
     const Touch = Touchanger()
+
+    useEffect(() => {
+        inDispatch({type: 'moreVisit'})
+    }, [state.firstVisit])
 
     navigation.setOptions({headerRight:() => (
             <View style={{marginRight: marginLR}}>
@@ -48,7 +51,7 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, AddRecipe}) => 
         behavior={Platform.OS == "ios" ? "padding" : "height"}>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <ScrollView contentContainerStyle={styles.marginer}>
-            <CustomTextInput title="Recipe's Name" onSubmit = {
+            <CustomTextInput firstVisit={state.firstVisit} title="Recipe's Name" onSubmit = {
                 (name) => inDispatch({
                     type: "changeName", payload: name
                 })
@@ -87,12 +90,12 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, AddRecipe}) => 
                 />
             </View>
             <ErrorDisplayer err={state.categoriesError} />
-            <CustomTextInput title="ImageUrl" onSubmit = {
+            <CustomTextInput firstVisit={state.firstVisit} title="ImageUrl" onSubmit = {
                 (name) => inDispatch({
                     type: "changeImageUrl", payload: name
                 })
             }/>
-            <CustomTextInput title="estimated time" keyboardType="decimal-pad" onSubmit = {
+            <CustomTextInput firstVisit={state.firstVisit} title="estimated time" keyboardType="decimal-pad" onSubmit = {
                 (number) => inDispatch({
                     type: "changeEstimatedTime", payload: Number(number)
                 })
@@ -106,7 +109,6 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, AddRecipe}) => 
 const MapDispatchToProps = dispatch => ({
     AddAllCats: (name) => dispatch(addAllCats(name)),
     AddIngredient: (name) => dispatch(addIngredient(name)),
-    AddRecipe: item => dispatch(addRecipe(item))
 })
 
 

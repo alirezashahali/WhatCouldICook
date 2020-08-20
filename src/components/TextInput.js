@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {View, TextInput, StyleSheet, Text} from 'react-native'
 import Colors from './../../constants/colors'
 import {marginLR} from './../../constants/miscelaneous'
 
-const CustomTextInput = ({title, onSubmit, error, keyboardType}) => {
+const CustomTextInput = ({title, onSubmit, error, keyboardType, firstVisit}) => {
     const [input, setInput] = useState('')
     const [erMsg, setErMsg] = useState('')
     const handleChange = (text) => {
@@ -11,6 +11,13 @@ const CustomTextInput = ({title, onSubmit, error, keyboardType}) => {
         setInput(In)
         setErMsg("")
     }
+
+    useEffect(() => {
+        if(firstVisit===true){
+            setInput("")
+            setErMsg("")
+        }
+    }, [firstVisit])
 
     return(
         <View>

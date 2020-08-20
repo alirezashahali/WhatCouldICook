@@ -24,17 +24,6 @@ const MainSearchListStack = ({navigation}) => {
             title: "What-2-Cook",
             headerTitleStyle:{fontFamily: "Kaushan"},
             headerLeft: HeaderLeft({navigation}),
-            headerRight: () => {
-                return(
-                    <View style={{marginRight: marginLR}}>
-                        <Touch onPress={() => {
-                            navigation.navigate('searchRecipe')
-                        }}>
-                            <Ionicons name="md-search" color={Colors.headerFont} size={size} />
-                        </Touch>
-                    </View>
-                )
-            }
         }} />
         <Stack.Screen name="recipeDetail" component={RecipeDetailScreen}
         options={({ route }) => ({ title: route.params.name,
