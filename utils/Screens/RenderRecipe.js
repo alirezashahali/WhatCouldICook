@@ -1,5 +1,5 @@
 import React from 'react'
-import {View, Text, StyleSheet, Image} from 'react-native'
+import {View, Text, StyleSheet, Image, Dimensions} from 'react-native'
 import Touchanger from './../../utils/Touchanger'
 import Card from './../../src/components/Card'
 import {SpacerHalf} from './../../src/components/Spacer'
@@ -13,39 +13,42 @@ const RenderRecipe = ({item, navigation, puss}) => {
         }}>
             <View>
                 <Card>
-                        {
-                            item.imageUrl ?
-                            <Image source={{uri: item.imageUrl}} /> :
-                            null
-                        }
-                        <Text style={styles.recipeName}>{item.name}</Text>
-                        <View>
-                            <Text style={styles.text}>
-                                Ingredients: 
-                            </Text>
-                            <View style={{...styles.horizontal, alignItems: "center"}}>
-                                {
-                                    item.ingredients.map(el => <Text key={String(el.id)}>{el.name}  </Text>)
-                                }
-                            </View>
+                    <Text style={styles.recipeName}>{item.name}</Text>
+                    {
+                        item.imageUrl ?
+                        <Image source={{uri: item.imageUrl}}
+                            style={{width: Dimensions.get("window").width*.8,
+                            height: Dimensions.get("window").width*.8*3/4, borderRadius: 5}} 
+                        /> :
+                        null
+                    }
+                    <View>
+                        <Text style={styles.text}>
+                            Ingredients: 
+                        </Text>
+                        <View style={{...styles.horizontal, alignItems: "center"}}>
                             {
-                                puss ?
-                                <View style={styles.horizontal}>
-                                    <Text>
-                                        CatsStar {item.catsStar}  
-                                    </Text>
-                                    <Text>
-                                        ingsStar {item.ingsStar}
-                                    </Text>
-                                    <Text>
-                                        deficit {item.additionalIngs}
-                                    </Text>
-                                </View> :
-                                null
+                                item.ingredients.map(el => <Text key={String(el.id)}>{el.name}  </Text>)
                             }
                         </View>
-                        <SpacerHalf/>
-                        <Text style={styles.text}>estimatedTime: {item.estimatedTime}m</Text>
+                        {
+                            puss ?
+                            <View style={styles.horizontal}>
+                                <Text>
+                                    CatsStar {item.catsStar}  
+                                </Text>
+                                <Text>
+                                    ingsStar {item.ingsStar}
+                                </Text>
+                                <Text>
+                                    deficit {item.additionalIngs}
+                                </Text>
+                            </View> :
+                            null
+                        }
+                    </View>
+                    <SpacerHalf/>
+                    <Text style={styles.text}>estimatedTime: {item.estimatedTime}m</Text>
                 </Card>
             </View>
         </Touch>

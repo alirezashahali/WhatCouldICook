@@ -1,6 +1,5 @@
 import IngredientType from './ingredients.types'
 
-
 const INITIAL_STATE = {
     availableIngredient: [],
     allIngredients: []

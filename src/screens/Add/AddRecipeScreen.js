@@ -12,67 +12,11 @@ import {connect} from 'react-redux'
 import {addAllCats} from './../../../redux/categories/categories.actions'
 import {addIngredient} from './../../../redux/ingredients/ingredients.actions'
 import {initialState, reducer, errorChecker} from './Constants'
-import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
-import CustomButton from '../../components/Button';
-import { FontAwesome } from '@expo/vector-icons';
-import Colors from './../../../constants/colors'
+import CameraSection from './CameraSection'
 
 const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, recipes}) => {
     const [state, inDispatch] = useReducer(reducer, initialState)
     const Touch = Touchanger()
-
-    const getPermissionAsync = async () => {
-        if (Constants.platform.ios) {
-          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-          const {camStatus} = await Permissions.askAsync(Permissions.CAMERA)
-          if (status !== 'granted') {
-            alert('Sorry, we need camera roll permissions to make this work!');
-          }
-          if(camStatus !== 'granted'){
-              alert('Sorry, we need camera permissions to make this work!')
-          }
-        }
-    };
-
-    const _pickImage = async () => {
-        try {
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-          });
-          if (!result.cancelled) {
-            inDispatch({type: "changeImageUrl", payload: result.uri})
-          }
-
-          console.log("result", result);
-        } catch (E) {
-          console.log(E);
-        }
-      };
-
-    const _takeImage = async () => {
-        try{
-            let result = await ImagePicker.launchCameraAsync({
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1
-            })
-            if(!result.cancelled){
-                inDispatch({type: "changeImageUrl", payload: result.uri})
-            }
-
-        }catch (E){
-
-        }
-    }
-
-    useEffect(() => {
-        getPermissionAsync()
-    }, [])
 
     const headerRight = useCallback(() => {
         navigation.setOptions({headerRight:() => (
@@ -171,26 +115,11 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, recipes}) => {
             <SpacerFull/>
 
             {/* image Buttons */}
-            <View style={styles.cameraButtons}>
-                <CustomButton title="Gallery"
-                    style={{width: "50%", alignSelf:"center", height: 60,
-                    backgroundColor: Colors.buttonsPrimary}}
-                    textStyle={{fontFamily: "OpenSansSemiBold", color: "white"}}
-                    onPress={_pickImage}
-                />
-                <CustomButton style={{width: "40%", alignSelf:"center", height: 60,
-                    backgroundColor: Colors.buttonsPrimary}} onPress={_takeImage}>
-                    <FontAwesome name="camera-retro" size={size} color="white" />
-                </CustomButton>
-            </View>
-            <View style={{marginHorizontal: marginLR/2}}>
-            {
-                state.imageUrl.length > 0 && <Image source={{ uri: state.imageUrl }}
-                    style={{ width: Dimensions.get('window').width,
-                    height: Dimensions.get('window').width*3/4, alignSelf: "center", borderRadius: 5 }}
-                />
-            }
-            </View>
+            <CameraSection imageUri={state.imageUrl} dispatch={(dic) => {
+                console.log(dic)
+                console.log("entered")
+                inDispatch(dic)
+                }} />
             {/* Image Buttons */}
 
             <CustomTextInput firstVisit={state.firstVisit} title="estimated time"
