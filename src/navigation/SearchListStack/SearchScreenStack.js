@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import SearchScreen from '../../screens/Search/SearchScreen'
 import Colors from '../../../constants/colors'
 import HeaderLeft from '../../../utils/headerUtils/HeaderLeft'
+import SearchListScreen from './../../screens/Search/SearchListScreen'
 
 const Stack = createStackNavigator()
 
@@ -15,10 +16,14 @@ const SearchScreenStack = ({navigation}) => {
             headerTitleAlign: "center"
         }}>
             <Stack.Screen name="searchBy" component={SearchScreen} options={{
-            title: "What-2-Cook",
-            headerTitleStyle:{fontFamily: "Kaushan"},
-            headerLeft: HeaderLeft({navigation})
-        }} />
+                title: "Suitable-Recipe",
+                headerTitleStyle:{fontFamily: "Kaushan"},
+                headerLeft: HeaderLeft({navigation})
+            }} />
+            <Stack.Screen name="searchByList" component={SearchListScreen} options={{
+                title: "Possible Recipes",
+                headerTitleStyle:{fontFamily: "Kaushan"},
+            }} />
         </Stack.Navigator>
     )
 }

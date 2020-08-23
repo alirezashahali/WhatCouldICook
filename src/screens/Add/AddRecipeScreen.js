@@ -1,6 +1,6 @@
-import React, {useReducer, useEffect} from 'react'
-import {View, Text, StyleSheet, Platform, Keyboard,
-    TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView} from 'react-native'
+import React, {useReducer, useEffect, useLayoutEffect, useCallback, useState} from 'react'
+import {View, Text, StyleSheet, Platform, Keyboard, Image,
+    TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, Alert, Dimensions} from 'react-native'
 import AddRecipeForm from './../../../src/screens/Add/AddRecipeForm'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {SpacerFull} from './../../components/Spacer'
@@ -12,17 +12,70 @@ import {connect} from 'react-redux'
 import {addAllCats} from './../../../redux/categories/categories.actions'
 import {addIngredient} from './../../../redux/ingredients/ingredients.actions'
 import {initialState, reducer, errorChecker} from './Constants'
+import * as ImagePicker from 'expo-image-picker';
+import Constants from 'expo-constants';
+import * as Permissions from 'expo-permissions';
+import CustomButton from '../../components/Button';
+import { FontAwesome } from '@expo/vector-icons';
+import Colors from './../../../constants/colors'
 
-
-const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
+const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, recipes}) => {
     const [state, inDispatch] = useReducer(reducer, initialState)
     const Touch = Touchanger()
 
-    useEffect(() => {
-        inDispatch({type: 'moreVisit'})
-    }, [state.firstVisit])
+    const getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+          const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+          const {camStatus} = await Permissions.askAsync(Permissions.CAMERA)
+          if (status !== 'granted') {
+            alert('Sorry, we need camera roll permissions to make this work!');
+          }
+          if(camStatus !== 'granted'){
+              alert('Sorry, we need camera permissions to make this work!')
+          }
+        }
+    };
 
-    navigation.setOptions({headerRight:() => (
+    const _pickImage = async () => {
+        try {
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+          });
+          if (!result.cancelled) {
+            inDispatch({type: "changeImageUrl", payload: result.uri})
+          }
+
+          console.log("result", result);
+        } catch (E) {
+          console.log(E);
+        }
+      };
+
+    const _takeImage = async () => {
+        try{
+            let result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1
+            })
+            if(!result.cancelled){
+                inDispatch({type: "changeImageUrl", payload: result.uri})
+            }
+
+        }catch (E){
+
+        }
+    }
+
+    useEffect(() => {
+        getPermissionAsync()
+    }, [])
+
+    const headerRight = useCallback(() => {
+        navigation.setOptions({headerRight:() => (
             <View style={{marginRight: marginLR}}>
                 <Touch onPress={() => {
                     // inDispatch('reset')
@@ -30,6 +83,19 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
                     let errors = errorChecker(state)
                     if(Math.max(...errors)>0){
                         return inDispatch({type: "errorOccurance", payload: errors})
+                    }
+                    if(recipes.find(el => el.name.toLowerCase()===state.name.toLowerCase())){
+                        return Alert.alert(
+                            "This name is already taken",
+                            "Please change it to sth else",
+                            [
+                                {
+                                text: "OK",
+                                onPress: () => console.log("OK was Pressed"),
+                                }
+                            ],
+                            { cancelable: false }
+                            );
                     }
                     for(i in state.ingredients){
                         AddIngredient(state.ingredients[i])
@@ -44,8 +110,19 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
                     <MaterialCommunityIcons name="file-document-box-check" size={size} color="white" />
                 </Touch>
             </View>
-        )
-    })
+        )})
+    }, [navigation, state])
+
+    useEffect(() => {
+        inDispatch({type: 'moreVisit'})
+    }, [state.firstVisit])
+
+    useEffect(() => {
+        console.log(state.imageUrl)
+    }, [state.imageUrl])
+
+    useLayoutEffect(headerRight, [headerRight])
+    
     return (
         <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height"}>
@@ -60,8 +137,9 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
             <SpacerFull />
             <View>
                 <AddRecipeForm title="Add needed ingredient" list={state.ingredients}
-                    onCreate={async (name) => {
-                        await inDispatch({
+                    onCreate={(name) => {
+                        console.log(name)
+                        inDispatch({
                             type: "addIngredient", payload: name
                         })
                         let errors = errorChecker(state)
@@ -77,8 +155,8 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
             <View>
                 <AddRecipeForm title="Add recipe categories(helpful for future search)"
                     list={state.categories}
-                    onCreate={async (name) => {
-                        await inDispatch({
+                    onCreate={(name) => {
+                        inDispatch({
                             type: "addCategory", payload: name
                         })
                         let errors = errorChecker(state)
@@ -90,12 +168,33 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
                 />
             </View>
             <ErrorDisplayer err={state.categoriesError} />
-            <CustomTextInput firstVisit={state.firstVisit} title="ImageUrl" onSubmit = {
-                (name) => inDispatch({
-                    type: "changeImageUrl", payload: name
-                })
-            }/>
-            <CustomTextInput firstVisit={state.firstVisit} title="estimated time" keyboardType="decimal-pad" onSubmit = {
+            <SpacerFull/>
+
+            {/* image Buttons */}
+            <View style={styles.cameraButtons}>
+                <CustomButton title="Gallery"
+                    style={{width: "50%", alignSelf:"center", height: 60,
+                    backgroundColor: Colors.buttonsPrimary}}
+                    textStyle={{fontFamily: "OpenSansSemiBold", color: "white"}}
+                    onPress={_pickImage}
+                />
+                <CustomButton style={{width: "40%", alignSelf:"center", height: 60,
+                    backgroundColor: Colors.buttonsPrimary}} onPress={_takeImage}>
+                    <FontAwesome name="camera-retro" size={size} color="white" />
+                </CustomButton>
+            </View>
+            <View style={{marginHorizontal: marginLR/2}}>
+            {
+                state.imageUrl.length > 0 && <Image source={{ uri: state.imageUrl }}
+                    style={{ width: Dimensions.get('window').width,
+                    height: Dimensions.get('window').width*3/4, alignSelf: "center", borderRadius: 5 }}
+                />
+            }
+            </View>
+            {/* Image Buttons */}
+
+            <CustomTextInput firstVisit={state.firstVisit} title="estimated time"
+                keyboardType="decimal-pad" onSubmit = {
                 (number) => inDispatch({
                     type: "changeEstimatedTime", payload: Number(number)
                 })
@@ -109,6 +208,10 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient}) => {
 const MapDispatchToProps = dispatch => ({
     AddAllCats: (name) => dispatch(addAllCats(name)),
     AddIngredient: (name) => dispatch(addIngredient(name)),
+})
+
+const MapStateToProps = state => ({
+    recipes: state.recipes.recipes
 })
 
 
@@ -127,7 +230,14 @@ const styles = StyleSheet.create({
     },
     error: {
         color: "red"
+    },
+    cameraButtons: {
+        width: Dimensions.get('window').width*.9,
+        justifyContent: "space-between",
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "center"
     }
 })
 
-export default connect(null, MapDispatchToProps)(AddRecipeScreen)
+export default connect(MapStateToProps, MapDispatchToProps)(AddRecipeScreen)

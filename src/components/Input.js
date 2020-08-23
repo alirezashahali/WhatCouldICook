@@ -26,7 +26,7 @@ const Input = ({onSubmit}) => {
                 handleChange(text)
             }} returnKeyType={"done"} />
             <CustomButton style={{backgroundColor: "blue", paddingHorizontal: 5, paddingVertical: 5,
-            width: null}} onPress={() => {
+            width: null, backgroundColor: Colors.buttonsPrimary}} onPress={() => {
                 if(name.trim() !== ""){
                     onSubmit(name.trim())
                     setName("")

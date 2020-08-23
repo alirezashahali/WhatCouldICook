@@ -4,12 +4,11 @@ import Colors from './../../constants/colors'
 import {marginLR, size} from './../../constants/miscelaneous'
 import { Ionicons } from '@expo/vector-icons';
 
-const SearchComponent = ({title, setTitle, visible, close}) => {
+const SearchComponent = ({visible, close, changeValue, value, placeHolder}) => {
     const slideAnim = useRef(new Animated.Value(-40)).current
     const searchInput = useRef(null)
 
-    useEffect(() => {
-        
+    useEffect(() => {    
         if(visible){
             searchInput.current.focus()
             Animated.timing(
@@ -37,10 +36,9 @@ const SearchComponent = ({title, setTitle, visible, close}) => {
         <Animated.View style={{...styles.container, top: slideAnim}}>
                 <View style={styles.search}>
                     <TextInput style={styles.searchInput} returnKeyType={"done"} ref={searchInput}
-                        onKeyPress={({nativeEvent:{key}}) => {
-                            console.log(key)
-                        }
-                    }/>
+                        onChangeText={changeValue} value={value} placeholder={placeHolder}
+                        placeholderTextColor="#aaa"
+                    />
                     {/* <Ionicons name="md-search" color="black" size={size} />  */}
                 </View>
         </Animated.View>

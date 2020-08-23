@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {View, Text, StyleSheet, FlatList, ScrollView} from 'react-native'
 import {marginLR} from './../../../constants/miscelaneous'
 import CustomButton from './../../components/Button'
@@ -13,11 +13,17 @@ const AddRecipeForm = ({title, list, onCreate, onDelete}) => {
                 {title}
             </Text>
             <ScrollView>
-                <FlatList horizontal data={list} keyExtractor={item => String(item)} renderItem={({item}) => {
+                <FlatList horizontal data={list}
+                    keyExtractor={item => item.id ? String(item.id) : String(item)}
+                    renderItem={({item}) => {
                     return (
                     <View style={styles.container}>
                         <Text style={styles.subHeader}>
-                            {item}
+                            {
+                                typeof item === "string" ?
+                                    item :
+                                    item.name
+                            }
                         </Text>
                         <CustomButton
                             style={{ backgroundColor: "white", width: null,
