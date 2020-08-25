@@ -13,6 +13,10 @@ import {addAllCats} from './../../../redux/categories/categories.actions'
 import {addIngredient} from './../../../redux/ingredients/ingredients.actions'
 import {initialState, reducer, errorChecker} from './Constants'
 import CameraSection from './CameraSection'
+import {addCategorySql, addIngredientSql} from './../../helpers/db'
+import * as SQLite from 'expo-sqlite';
+
+const db = SQLite.openDatabase('recipe.db')
 
 const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, recipes}) => {
     const [state, inDispatch] = useReducer(reducer, initialState)
@@ -43,9 +47,11 @@ const AddRecipeScreen = ({navigation, AddAllCats, AddIngredient, recipes}) => {
                     }
                     for(i in state.ingredients){
                         AddIngredient(state.ingredients[i])
+                        addIngredientSql(db, state.ingredients[i])
                     }
                     for(j in state.categories){
                         AddAllCats(state.categories[j])
+                        addCategorySql(db, state.categories[j])
                     }
                     let copyState = {...state}
                     navigation.navigate("recipeList", {state: copyState})

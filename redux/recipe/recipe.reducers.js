@@ -11,8 +11,7 @@ const RecipeReducer = (state=INITIAL_STATE, actions) => {
         case recipeTypes.ADD_RECIPE:
             if(state.recipes.findIndex(el => el.name===actions.payload.name)<=-1){
                 const pay = actions.payload
-                const id = Math.floor(Math.random()*100000)
-                const recipe = new Recipe(id, pay.name, pay.categories,
+                const recipe = new Recipe(pay.id, pay.name, pay.categories,
                     pay.ingredients, pay.recipe, pay.estimatedTime, pay.imageUrl)
                 return {...state, recipes:[...state.recipes, recipe]}
             }else{

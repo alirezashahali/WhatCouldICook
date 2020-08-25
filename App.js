@@ -1,10 +1,17 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import MainNavigator from './src/navigation/MainNavigation'
 import { useFonts } from 'expo-font';
 import { AppLoading } from 'expo';
+import {init} from './src/helpers/db'
+import * as SQLite from 'expo-sqlite';
+
+const db = SQLite.openDatabase('recipe.db')
+init(db)
+  .then(console.log("ingredients table is created"))
+  .catch((e)=>{console.log(e)})
 
 export default function App() {
   let [fontsLoaded] = useFonts({

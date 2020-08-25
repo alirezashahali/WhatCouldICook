@@ -13,6 +13,10 @@ import { useIsFocused } from '@react-navigation/native';
 import NoComponent from './../../components/NoComponent'
 import {reducer} from './Constants'
 import CustomButton from '../../components/Button'
+import {findCategorySql, findIngredientSql} from './../../helpers/db'
+import * as SQLite from 'expo-sqlite';
+
+const db = SQLite.openDatabase('recipe.db')
 
 const SearchListScreen = ({recipes, allCats, navigation, route, ingredients, AddRecipe,
     chosenCats, availableIngredients}) =>{
@@ -73,14 +77,12 @@ const SearchListScreen = ({recipes, allCats, navigation, route, ingredients, Add
             setAdding(true)
             const state = route.params.state
             for(i in state.ingredients){
-                let index = ingredients.findIndex(el => el.name === state.ingredients[i])
-                let {id, name} = ingredients[index]
-                state.ingredients[i] = {id, name}
+                let id = findIngredientSql(db, state.ingredients[i])
+                state.ingredients[i] = {id, name: state.ingredients[i]}
             }
             for(j in state.categories){
-                let index = allCats.findIndex(el => el.name === state.categories[j])
-                let {id, name} = allCats[index]
-                state.categories[j] = {id, name}
+                let id = findCategorySql(db, state.categories[i])
+                state.categories[j] = {id, name: state.categories[i]}
             }
             AddRecipe(state)
             setAdding(false)
